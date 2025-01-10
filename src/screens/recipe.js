@@ -102,7 +102,7 @@ const SearchScreen = ({ navigation }) => {
         onPress={() => navigation.navigate('Recipedetails', { recipe: item })}
         activeOpacity={0.8}>
         <Image
-          source={require('D:/Self-Learnt/React/MealPlanner/assets/pot.png')}
+          source={require('../../assets/pot.png')}
           style={styles.cardImage}
           resizeMode="cover"
         />

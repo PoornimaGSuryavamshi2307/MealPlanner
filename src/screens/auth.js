@@ -430,7 +430,7 @@ const Auth = ({ navigation }) => {
                     showsVerticalScrollIndicator={false}
                 >
                     <View>
-                        <Image style={styles.logoImage} source={require('D:/Self-Learnt/React/MealPlanner/assets/cooking.png')} />
+                        <Image style={styles.logoImage} source={require('../../assets/cooking.png')} />
                         <Text style={styles.logoName}>Meal Planner</Text>
                     </View>
                     {activeScreen === 'login' && renderLogin()}

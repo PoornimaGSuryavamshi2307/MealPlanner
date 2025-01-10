@@ -26,7 +26,7 @@ const Recipedetails = ({ route }) => {
     <ScrollView style={{ flex: 1 }}>
       <View style={styles.container}>
         <Text style={styles.title}>{recipe.name}</Text>
-        <Image style={styles.placeholder} source={require('D:/Self-Learnt/React/MealPlanner/assets/cooking.png')} />;
+        <Image style={styles.placeholder} source={require('../../assets/cooking.png')} />;
         {/* <Image
           source={require('../assets/recipe-image.jpg')}
           style={styles.cardImage}
