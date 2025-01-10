@@ -6,16 +6,13 @@ from sqlalchemy.orm import Session
 import models
 from sqlalchemy import create_engine, Column, String, Integer, MetaData, Table
 from pydantic import BaseModel
-import auth
-from auth import get_current_user
+from auth import get_current_user, router
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
-app.include_router(auth.router)
+app.include_router(router)
 
-models.Base.metadata.create_all(bind=engine)
-
-
+# models.Base.metadata.create_all(bind=engine)
 
 app.add_middleware(
     CORSMiddleware,

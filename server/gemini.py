@@ -9,7 +9,6 @@ import google.generativeai as genai
 from google.ai.generativelanguage_v1beta.types import content
 
 genai.configure(api_key='AIzaSyCL8j-t60wRYCxQYKomCaHHNdO97VJRa60')
-print(os.getenv("GEMINI_API_KEY"))
 # Create the model
 generation_config = {
   "temperature": 2,

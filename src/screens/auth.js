@@ -12,6 +12,7 @@ import {
     ActivityIndicator,
     Animated,
     Alert,
+    Image
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -21,7 +22,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width } = Dimensions.get('window');
 
-const Auth = () => {
+const Auth = ({ navigation }) => {
     const [activeScreen, setActiveScreen] = useState('login');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -30,7 +31,7 @@ const Auth = () => {
     const [loading, setLoading] = useState(false);
     const [errors, setErrors] = useState({});
 
-    const navigation = useNavigation();
+    // const navigation = useNavigation();
 
     // Animation values
     const fadeAnim = new Animated.Value(1);
@@ -119,7 +120,7 @@ const Auth = () => {
                 throw new Error(data.detail || 'An error occurred');
             }
             await AsyncStorage.setItem('access_token', data.access_token);
-
+            console.log(navigation)
             navigation.navigate('Recipe');
             Alert.alert('Success', 'Logged in successfully');
         } catch (error) {
@@ -134,15 +135,40 @@ const Auth = () => {
 
         try {
             setLoading(true);
-            await authAPI.register(name, email, password);
-            Alert.alert('Success', 'Account created successfully', [
-                {
-                    text: 'OK',
-                    onPress: () => animateTransition('login')
-                }
-            ]);
+            const response = await fetch(`${API_BASE_URL}/auth/register`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username: name,
+                    email: email,
+                    password: password
+                })
+            });
+
+            // First handle the API response
+            const result = await response.json();
+
+            if (response.ok) {
+                // Alert.alert(
+                //     'Success',
+                //     'Account created successfully',
+                //     [
+                //         {
+                //             text: 'OK',
+                //             onPress: () => animateTransition('login')
+                //         }
+                //     ]
+                // );
+                navigation.navigate('Recipe');
+                return result;
+            } else {
+                // Handle error response from server
+                throw new Error(result.detail || 'Registration failed');
+            }
         } catch (error) {
-            Alert.alert('Error', error.message);
+            Alert.alert('Error', error.message || 'Something went wrong');
         } finally {
             setLoading(false);
         }
@@ -185,7 +211,7 @@ const Auth = () => {
                 },
             ]}
         >
-            <Text style={styles.title}>Welcome Back</Text>
+            <Text style={styles.title}>Welcome</Text>
             <Text style={styles.subtitle}>Sign in to continue</Text>
 
             <TextInput
@@ -385,6 +411,14 @@ const Auth = () => {
         </Animated.View>
     );
 
+    const handleApiResponse = async (response) => {
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.detail || 'An error occurred');
+        }
+        return data;
+    };
+
     return (
         <SafeAreaView style={styles.container}>
             <KeyboardAvoidingView
@@ -395,6 +429,10 @@ const Auth = () => {
                     contentContainerStyle={styles.scrollContent}
                     showsVerticalScrollIndicator={false}
                 >
+                    <View>
+                        <Image style={styles.logoImage} source={require('D:/Self-Learnt/React/MealPlanner/assets/cooking.png')} />
+                        <Text style={styles.logoName}>Meal Planner</Text>
+                    </View>
                     {activeScreen === 'login' && renderLogin()}
                     {activeScreen === 'signup' && renderSignup()}
                     {activeScreen === 'forgot' && renderForgotPassword()}
@@ -433,7 +471,7 @@ const styles = StyleSheet.create({
         elevation: 5,
     },
     title: {
-        fontSize: 28,
+        fontSize: 20,
         fontWeight: 'bold',
         color: '#333',
         marginBottom: 8,
@@ -443,6 +481,13 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#666',
         marginBottom: 24,
+        textAlign: 'center',
+    },
+    logoName: {
+        fontSize: 28,
+        fontWeight: 'bold',
+        color: '#333',
+        marginBottom: 8,
         textAlign: 'center',
     },
     input: {
@@ -508,6 +553,12 @@ const styles = StyleSheet.create({
         color: '#666',
         fontSize: 14,
         textAlign: 'center',
+    },
+    logoImage: {
+        width: 150,
+        height: 150,
+        // marginBottom: 20,
+        alignSelf: 'center',
     },
 });
 
