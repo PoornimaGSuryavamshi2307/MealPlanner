@@ -51,11 +51,11 @@ const SearchScreen = ({ navigation }) => {
       // console.log(data.recipe);
       // console.log(data.recipe.name);
       // setResults(data);
-      if(!response.ok){
+      if (!response.ok) {
         const mainError = data.detail.match(/error': '([^']+)'/)[1];
         console.log(mainError);  // "Input is not ingredient-related"
         Alert.alert('Error', mainError);
-      }else{
+      } else {
         handleApiResponse(data);
 
       }
@@ -163,7 +163,11 @@ const SearchScreen = ({ navigation }) => {
               onPress={handleSubmit}
               disabled={searchText.trim() === ''}
             >
-              <Text style={styles.buttonText}>Submit</Text>
+              {loading ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text style={styles.buttonText}>Submit</Text>
+              )}
             </TouchableOpacity>
           </Animated.View>
 

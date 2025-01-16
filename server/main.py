@@ -3,7 +3,6 @@ from database import engine, SessionLocal
 from typing import Annotated
 from databases import Database, DatabaseURL
 from sqlalchemy.orm import Session
-import models
 from sqlalchemy import create_engine, Column, String, Integer, MetaData, Table
 from pydantic import BaseModel
 from auth import get_current_user, router

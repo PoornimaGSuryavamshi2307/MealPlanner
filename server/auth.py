@@ -224,7 +224,7 @@ async def gemini(
         logger.info("-------------------------------")
         logger.info(validation_result)
         
-        if not validation_result['is_valid']:
+        if not validation_result['is_ingredient_related']:
             raise HTTPException(
                 status_code=400,
                 detail={
