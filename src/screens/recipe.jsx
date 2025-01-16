@@ -10,10 +10,14 @@ import {
   Animated,
   Dimensions,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 import { API_BASE_URL } from '../api/config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import Header from './header';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const { height } = Dimensions.get('window');
 
@@ -47,7 +51,14 @@ const SearchScreen = ({ navigation }) => {
       // console.log(data.recipe);
       // console.log(data.recipe.name);
       // setResults(data);
-      handleApiResponse(data);
+      if(!response.ok){
+        const mainError = data.detail.match(/error': '([^']+)'/)[1];
+        console.log(mainError);  // "Input is not ingredient-related"
+        Alert.alert('Error', mainError);
+      }else{
+        handleApiResponse(data);
+
+      }
 
       // Animate the search container upward
       // Animated.timing(moveAnimation, {
@@ -56,7 +67,7 @@ const SearchScreen = ({ navigation }) => {
       //   useNativeDriver: true,
       // }).start();
     } catch (error) {
-      console.error('Error:', error);
+      Alert.alert('Error', error.message);
     } finally {
       setLoading(false);
     }
@@ -120,7 +131,7 @@ const SearchScreen = ({ navigation }) => {
     try {
       setLoading(true);
       AsyncStorage.removeItem('access_token')
-      navigation.navigate('Auth');
+      navigation.replace('Auth');
 
     } catch (error) {
       Alert.alert('Error', error.message);
@@ -130,79 +141,80 @@ const SearchScreen = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <Animated.View
-        style={[
-          styles.searchContainer,
-          { transform: [{ translateY: moveAnimation }] }
-        ]}
-      >
-        <TextInput
-          style={styles.input}
-          value={searchText}
-          onChangeText={setSearchText}
-          placeholder="Enter your ingredients..."
-          placeholderTextColor="#666"
-        />
-        <TouchableOpacity
-          style={styles.button}
-          onPress={handleSubmit}
-          disabled={loading}
-        >
-          {loading ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <Text style={styles.buttonText}>Submit</Text>
+    <SafeAreaProvider>
+      <SafeAreaView style={{ flex: 1 }}>
+        <View style={styles.container}>
+          <Header />
+          <Animated.View
+            style={[
+              styles.searchContainer,
+              { transform: [{ translateY: moveAnimation }] }
+            ]}
+          >
+            <TextInput
+              style={styles.input}
+              value={searchText}
+              onChangeText={setSearchText}
+              placeholder="Enter your ingredients..."
+              placeholderTextColor="#666"
+            />
+            <TouchableOpacity
+              style={[styles.button, { opacity: searchText.trim() === '' ? 0.5 : 1 }]}
+              onPress={handleSubmit}
+              disabled={searchText.trim() === ''}
+            >
+              <Text style={styles.buttonText}>Submit</Text>
+            </TouchableOpacity>
+          </Animated.View>
+
+          {results.length > 0 && (
+            <Animated.View
+              style={[
+                styles.resultsContainer,
+                { transform: [{ translateY: moveAnimation }] }
+              ]}
+            >
+              <FlatList
+                data={results}
+                renderItem={renderCard}
+                keyExtractor={(item) => item.id.toString()}
+                numColumns={2}
+                columnWrapperStyle={styles.columnWrapper}
+              />
+            </Animated.View>
           )}
-        </TouchableOpacity>
-      </Animated.View>
 
-      {results.length > 0 && (
-        <Animated.View
-          style={[
-            styles.resultsContainer,
-            { transform: [{ translateY: moveAnimation }] }
-          ]}
-        >
-          <FlatList
-            data={results}
-            renderItem={renderCard}
-            keyExtractor={(item) => item.id.toString()}
-            numColumns={2}
-            columnWrapperStyle={styles.columnWrapper}
-          />
-        </Animated.View>
-      )}
+          <TouchableOpacity
+            style={styles.logoutbutton}
+            onPress={() => setIsLogoutVisible(!isLogoutVisible)}
+            disabled={loading}
+          >
+            <Icon name="sign-out" size={20} color="white" />
+          </TouchableOpacity>
 
-      <TouchableOpacity
-        style={styles.logoutbutton}
-        onPress={() => setIsLogoutVisible(!isLogoutVisible)}
-        disabled={loading}
-      >
-        <Icon name="sign-out" size={20} color="white" />
-      </TouchableOpacity>
-
-      {/* Logout Confirmation Modal (optional) */}
-      {isLogoutVisible && (
-        <View style={styles.modal}>
-          <Text>Are you sure you want to logout?</Text>
-          <View style={styles.modalButtons}>
-            <TouchableOpacity
-              style={styles.modalButton}
-              onPress={handleLogoutPress}
-            >
-              <Text>Yes</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.modalButton}
-              onPress={() => setIsLogoutVisible(false)}
-            >
-              <Text>Cancel</Text>
-            </TouchableOpacity>
-          </View>
+          {/* Logout Confirmation Modal (optional) */}
+          {isLogoutVisible && (
+            <View style={styles.modal}>
+              <Text>Are you sure you want to logout?</Text>
+              <View style={styles.modalButtons}>
+                <TouchableOpacity
+                  style={styles.modalButton}
+                  onPress={handleLogoutPress}
+                >
+                  <Text>Yes</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.modalButton}
+                  onPress={() => setIsLogoutVisible(false)}
+                >
+                  <Text>Cancel</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          )}
         </View>
-      )}
-    </View>
+      </SafeAreaView>
+    </SafeAreaProvider>
 
 
   );

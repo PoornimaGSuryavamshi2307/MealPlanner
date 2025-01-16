@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import {
     View,
@@ -121,10 +122,15 @@ const Auth = ({ navigation }) => {
             }
             await AsyncStorage.setItem('access_token', data.access_token);
             console.log(navigation)
-            navigation.navigate('Recipe');
-            Alert.alert('Success', 'Logged in successfully');
+            navigation.replace('Recipe');
         } catch (error) {
-            Alert.alert('Error', error.message);
+            console.log('Error caught:', error.message);  // Debug log
+            Alert.alert(
+                'Login Error',
+                'Invalid email or password. Please try again.',
+                [{ text: 'OK' }],
+                { cancelable: false }
+            );
         } finally {
             setLoading(false);
         }
@@ -161,7 +167,7 @@ const Auth = ({ navigation }) => {
                 //         }
                 //     ]
                 // );
-                navigation.navigate('Recipe');
+                navigation.replace('Recipe');
                 return result;
             } else {
                 // Handle error response from server
@@ -176,25 +182,37 @@ const Auth = ({ navigation }) => {
 
     // Update your handleForgotPassword function
     const handleForgotPassword = async () => {
-        if (!email) {
-            setErrors({ email: 'Email is required' });
-            return;
-        }
+        // if (!email) {
+        //     setErrors({ email: 'Email is required' });
+        //     return;
+        // }
 
-        try {
-            setLoading(true);
-            await authAPI.resetPassword(email);
-            Alert.alert('Success', 'Password reset email sent', [
-                {
-                    text: 'OK',
-                    onPress: () => animateTransition('login')
-                }
-            ]);
-        } catch (error) {
-            Alert.alert('Error', error.message);
-        } finally {
-            setLoading(false);
-        }
+        // try {
+        //     setLoading(true);
+        //     const response = await fetch(`${API_BASE_URL}/auth/password-reset`, {
+        //         method: 'POST',
+        //         headers: {
+        //             'Content-Type': 'application/json',
+        //         },
+        //         body: JSON.stringify({ email }),
+        //     });
+
+        //     const result = await response.json();
+
+        //     if (response.ok) {
+        Alert.alert('Success', 'Email setup has not made yet,you will have to wait for this feature', [
+            {
+                text: 'OK',
+            }
+        ]);
+        //     } else {
+        //         throw new Error(result.detail || 'An error occurred');
+        //     }
+        // } catch (error) {
+        //     Alert.alert('Error', error.message);
+        // } finally {
+        //     setLoading(false);
+        // }
     };
 
     const ErrorMessage = ({ error }) => (

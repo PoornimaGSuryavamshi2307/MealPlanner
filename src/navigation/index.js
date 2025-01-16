@@ -46,7 +46,10 @@ const Navigation = () => {
 
       <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName={signedIn ? 'Recipe' : 'Auth'}>
         <Stack.Screen name="Recipe" component={Recipescreen} />
-        <Stack.Screen name="Auth" component={Authscreen} />
+        <Stack.Screen name="Auth" component={Authscreen} options={{
+          gestureEnabled: false, // Prevent swipe back
+          headerShown: false,    // Hide the header to prevent back button
+        }} />
         <Stack.Screen name="Recipedetails" component={RecipedetailsScreen} options={{
           headerShown: true, // Show the header
           headerTitle: "Recipe Details", // Optional: set header title
