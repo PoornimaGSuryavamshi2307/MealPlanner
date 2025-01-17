@@ -52,7 +52,7 @@ const SearchScreen = ({ navigation }) => {
       // console.log(data.recipe.name);
       // setResults(data);
       if (!response.ok) {
-        const mainError = data.detail.match(/error': '([^']+)'/)[1];
+        const mainError = data.detail.match(/error': '([^']+)'/)[1] ? data.detail.match(/error': '([^']+)'/)[1] : data.detail;
         console.log(mainError);  // "Input is not ingredient-related"
         Alert.alert('Error', mainError);
       } else {

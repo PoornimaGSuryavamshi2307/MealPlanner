@@ -22,7 +22,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 import json 
 import typing_extensions as typing
-from ingredient_validator import IngredientValidator
+# from ingredient_validator import IngredientValidator
 
 router = APIRouter(
     tags=["auth"],
@@ -212,27 +212,27 @@ async def gemini(
     current_user: User = Depends(get_current_user)
 ):
     try:
-        # Initialize validator
-        logger.info("-------------------------------")
-        validator = IngredientValidator()
+        # # Initialize validator
+        # logger.info("-------------------------------")
+        # validator = IngredientValidator()
         
-        logger.info("-------------------------------")
-        logger.info(validator)
+        # logger.info("-------------------------------")
+        # logger.info(validator)
         
-        # Validate input
-        validation_result = validator.validate_and_process(formData.ingredients)
-        logger.info("-------------------------------")
-        logger.info(validation_result)
+        # # Validate input
+        # validation_result = validator.validate_and_process(formData.ingredients)
+        # logger.info("-------------------------------")
+        # logger.info(validation_result)
         
-        if not validation_result['is_ingredient_related']:
-            raise HTTPException(
-                status_code=400,
-                detail={
-                    "error": "Input is not ingredient-related",
-                    "validation_details": validation_result
-                }
-            )
-        logger.info(formData)
+        # if not validation_result['is_ingredient_related']:
+        #     raise HTTPException(
+        #         status_code=400,
+        #         detail={
+        #             "error": "Input is not ingredient-related",
+        #             "validation_details": validation_result
+        #         }
+        #     )
+        # logger.info(formData)
         searched_ingredients = models.Ingredient(
             user_id=current_user['id'],
             ingredients=formData.ingredients,
