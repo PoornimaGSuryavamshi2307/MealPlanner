@@ -227,13 +227,12 @@ async def gemini(
         if not validation_result['is_ingredient_related']:
             raise HTTPException(
                 status_code=400,
-                detail={
-                    "error": "Input is not ingredient-related",
-                    "validation_details": validation_result
-                }
+                detail= "Input is not ingredient-related"
+        
             )
+        
         logger.info("-------------------------------")
-        logger.info(validation_result)
+        logger.info(validation_result['is_ingredient_related'])
         logger.info("-------------------------------")
         logger.info(formData)
         searched_ingredients = models.Ingredient(
