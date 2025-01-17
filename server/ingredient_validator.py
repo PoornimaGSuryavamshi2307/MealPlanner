@@ -1,3 +1,4 @@
+from venv import logger
 from transformers import pipeline
 import spacy
 
@@ -7,7 +8,12 @@ class IngredientValidator:
         self.nlp = spacy.load("en_core_web_sm")
         
         # Load zero-shot classification pipeline
-        self.classifier = pipeline("zero-shot-classification")
+        # self.classifier = pipeline("zero-shot-classification")
+        self.classifier = pipeline(
+                "zero-shot-classification",
+                model="facebook/bart-large-mnli",
+                revision="d7645e1"
+            )
         
         # Define ingredient-related categories and contexts
         self.ingredient_contexts = [
@@ -21,7 +27,7 @@ class IngredientValidator:
     def is_ingredient_related(self, text):
         # Parse text with spaCy
         doc = self.nlp(text)
-        print("---------is_ingredient_related------------")
+        logger.info("---------is_ingredient_related------------")
         print(doc.ents)
         
         # Check for food-related entities
@@ -30,11 +36,21 @@ class IngredientValidator:
             return True
             
         # Use zero-shot classification to check if text is ingredient-related
-        result = self.classifier(
-            text,
-            candidate_labels=self.ingredient_contexts,
-            multi_label=True
-        )
+        try:
+            result = self.classifier(
+                text,
+                candidate_labels=self.ingredient_contexts,
+                multi_label=True
+            )
+        except Exception as e:
+            return {
+                'is_valid': False,
+                'confidence': 0,
+                'details': {
+                    'error': f"Classifier failed: {e}"
+                }
+            }
+
         print("result",result)
         
         # If any ingredient context has high confidence (>0.7), consider it valid
@@ -84,15 +100,6 @@ class IngredientValidator:
         
         }
 # Example usage with Gemini
-def process_with_gemini(input_text):
-    validator = IngredientValidator()
-    validation_result = validator.validate_and_process(input_text)
-    
-    if not validation_result['is_valid']:
-        return {
-            'error': 'Input does not appear to be ingredient-related',
-            'validation_details': validation_result
-        }
         
     # Proceed with Gemini API call if validation passes
     # Your Gemini implementation here
