@@ -46,15 +46,10 @@ const SearchScreen = ({ navigation }) => {
         })
       })
 
-      // const response = await fetch('https://fakestoreapi.com/products');
       const data = await response.json();
-      // console.log(data.recipe);
-      // console.log(data.recipe.name);
-      // setResults(data);
       if (!response.ok) {
-        const mainError = data.detail.match(/error': '([^']+)'/)[1] ? data.detail.match(/error': '([^']+)'/)[1] : data.detail;
-        console.log(mainError);  // "Input is not ingredient-related"
-        Alert.alert('Error', mainError);
+        error_message = data['detail'].split(": ", 1)[1];
+        Alert.alert('Error', error_message);
       } else {
         handleApiResponse(data);
 
@@ -80,12 +75,6 @@ const SearchScreen = ({ navigation }) => {
         id: index + 1, // Generate an id for each recipe
         name: item.recipe_name,
         ingredients: item.ingredients,
-        // ingredients: item.ingredients.map(ingredient => ({
-        //   ingredient: ingredient,
-        //   // name: ingredient.name,
-        //   // amount: ingredient.amount,
-        //   // unit: ingredient.unit
-        // })),
         instructions: item.instructions,
       }));
 
@@ -98,8 +87,6 @@ const SearchScreen = ({ navigation }) => {
         name: response.recipe_name,
         ingredients: response.ingredients,
         instructions: response.instructions,
-        // nutrition: response.recipe.nutrition,
-        // culturalContext: response.recipe.culturalContext
       }]);
     }
   };
